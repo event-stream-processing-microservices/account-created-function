@@ -2,13 +2,13 @@
 Transform: 'AWS::Serverless-2016-10-31'
 Description: Account created handler
 Resources:
-  createAccount:
+  accountCreated:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: index.handler
       Runtime: nodejs4.3
       CodeUri: .
-      Description: Responds to a accound creation event
+      Description: Responds to an account creation event
       MemorySize: 128
       Timeout: 10
       Role: 'arn:aws:iam::194021864310:role/service-role/public'
@@ -16,5 +16,5 @@ Resources:
         Api1:
           Type: Api
           Properties:
-            Path: /createAccount
+            Path: /accountCreated
             Method: ANY
