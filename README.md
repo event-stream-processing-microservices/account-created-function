@@ -34,10 +34,11 @@ exports.handler = (event, context, callback) => {
   var traverson = require('traverson');
 
   // Apply the confirm command to the Account resource
-  traverson.from(event._links.account.href)
-    .follow('$._links.self.href')
-    .follow('$._links.commands.href')
-    .follow('$._links.confirm.href')
+  traverson
+    .from(event._links.account.href)
+    .follow('$._links.self.href',
+      '$._links.commands.href',
+      '$._links.confirm.href')
     .get(function(error, response) {
       // Return the account result
       callback(error, response);
