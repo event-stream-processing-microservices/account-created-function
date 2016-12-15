@@ -1,11 +1,14 @@
-// Account -> Commands -> Confirm
-var links = {
-  account: '$._links.self.href',
-  commands: '$._links.commands.href',
-  confirm: '$._links.confirm.href'
+// Lambda Function Handler (Node.js)
+exports.handler = (event, context, callback) => {
+  accountCreated(event, callback);
 };
 
-// DSL for creating a workflow
+// Link traversals
+var links = {
+  account: '$._links.self.href'
+};
+
+// DSL for creating a resource flow
 var flow = {
   tasks: [],
   callback: {},
@@ -26,11 +29,7 @@ var flow = {
   }
 };
 
-// Lambda Function Handler (Node.js)
-exports.handler = (event, context, callback) => {
-  accountCreated(event, callback);
-};
-
+// Handle the account created event
 function accountCreated(event, callback) {
   // Loads the traverson client module
   var traverson = require('traverson');
@@ -40,7 +39,7 @@ function accountCreated(event, callback) {
   // Get the account resource href from event
   var accountUrl = event._links.account.href;
 
-  // Apply the confirm command to the Account
+  // Apply the pending status to the attached account
   var traversal = traverson.from(accountUrl)
     .json()
     .withRequestOptions({
@@ -50,7 +49,7 @@ function accountCreated(event, callback) {
       }
     });
 
-  // Execute confirm account flow
+  // Execute account pending workflow
   flow.steps
     .then(getAccount)
     .then(setPending)
@@ -83,7 +82,6 @@ function getAccount(context) {
     .getResource(fetchResource);
 }
 
-
 // Sets the account status to pending for the next step
 function setPending(context) {
   console.log("Updating account...");
@@ -108,6 +106,7 @@ function setPending(context) {
     .put(context.account, updateAccount);
 }
 
+// Something went wrong, notify the callback handler
 function done(error) {
   flow.callback(error);
 }
